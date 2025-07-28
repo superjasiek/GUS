@@ -101,8 +101,11 @@ const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
       <div style={{ width: '50%' }}>
         <DualListBox
           options={availableUnits}
-          selected={selectedUnits}
-          onChange={(selected) => setSelectedUnits(selected)}
+          selected={selectedUnits.map(u => u.value)}
+          onChange={(selectedValues) => {
+            const selectedObjects = selectedValues.map(value => availableUnits.find(u => u.value === value));
+            setSelectedUnits(selectedObjects);
+          }}
         />
       </div>
     </div>
