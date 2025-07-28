@@ -13,10 +13,10 @@ const TreeNode = ({ node, onNodeToggle, onUnitAdd }) => {
 
   return (
     <li>
-      <span onClick={handleToggle} style={{ cursor: 'pointer' }}>
-        {isOpen ? '[-]' : '[+]'} {node.name}
+      <span onClick={handleToggle} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}>
+        <span>{isOpen ? '[-]' : '[+]'}&nbsp;{node.name}</span>
       </span>
-      <button onClick={() => onUnitAdd({ value: node.id, label: node.name })}>+</button>
+      <button onClick={() => onUnitAdd({ value: node.id, label: node.name })} style={{ marginLeft: '5px' }}>+</button>
       {isOpen && node.children && (
         <ul>
           {node.children.map(child => (
