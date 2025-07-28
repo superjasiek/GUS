@@ -11,8 +11,14 @@ const BDL_API_KEY = '7eb6ceb7-a994-4bf0-f27f-08ddcd5a2c67';
 const BDL_API_URL = 'https://bdl.stat.gov.pl/api/v1';
 
 app.get('/api/units', async (req, res) => {
+    const { level = 0, parentId } = req.query;
+    let url = `${BDL_API_URL}/units?level=${level}&format=json`;
+    if (parentId) {
+        url += `&parent-id=${parentId}`;
+    }
+
     try {
-        const response = await axios.get(`${BDL_API_URL}/units?level=2&format=json`, {
+        const response = await axios.get(url, {
             headers: { 'X-ClientId': BDL_API_KEY }
         });
         res.json(response.data);
