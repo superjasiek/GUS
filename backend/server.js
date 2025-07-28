@@ -12,7 +12,7 @@ const BDL_API_URL = 'https://bdl.stat.gov.pl/api/v1';
 
 app.get('/api/units', async (req, res) => {
     const { level = 0, parentId } = req.query;
-    let url = `${BDL_API_URL}/units?level=${level}&format=json`;
+    let url = `${BDL_API_URL}/units?level=${level}&format=json&page-size=100`;
     if (parentId) {
         url += `&parent-id=${parentId}`;
     }
