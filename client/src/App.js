@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import ExcelJS from 'exceljs';
 import UnitPicker from './components/UnitPicker';
+import './App.css';
 
 const API_URL = 'http://192.168.1.182:3001/api';
 
@@ -78,11 +79,12 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="App">
       <h1>BDL Data Exporter</h1>
-      <UnitPicker selectedUnits={selectedUnits} setSelectedUnits={setSelectedUnits} />
-      <br /><br />
-      <button onClick={handleExport}>Eksportuj do Excela</button>
+      <div className="container">
+        <UnitPicker selectedUnits={selectedUnits} setSelectedUnits={setSelectedUnits} />
+        <button className="export-button" onClick={handleExport}>Eksportuj do Excela</button>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DualListBox from 'react-dual-listbox';
 import 'react-dual-listbox/lib/react-dual-listbox.css';
+import { FaChevronLeft, FaChevronRight, FaAngleDoubleLeft, FaAngleDoubleRight } from 'react-icons/fa';
 
 const API_URL = 'http://192.168.1.182:3001/api';
 
@@ -105,6 +106,12 @@ const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
           onChange={(selectedValues) => {
             const selectedObjects = selectedValues.map(value => availableUnits.find(u => u.value === value));
             setSelectedUnits(selectedObjects);
+          }}
+          icons={{
+            moveLeft: <FaChevronLeft />,
+            moveAllLeft: <FaAngleDoubleLeft />,
+            moveRight: <FaChevronRight />,
+            moveAllRight: <FaAngleDoubleRight />,
           }}
         />
       </div>
