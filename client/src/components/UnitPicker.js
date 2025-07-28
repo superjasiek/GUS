@@ -48,6 +48,17 @@ const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
       if (node.level === 0) nextLevel = 2; // Polska -> Województwo
       if (node.level === 2) nextLevel = 5; // Województwo -> Powiat
       if (node.level === 5) nextLevel = 6; // Powiat -> Gmina
+      if (node.level === 6) { // Gmina -> Miasto/Obszar wiejski
+        const response = await axios.get(`${API_URL}/units?level=7&parentId=${node.id}`);
+        const children = response.data.results.map(child => ({ ...child, level: 7, children: [] }));
+        setTree(prevTree => {
+          const newTree = JSON.parse(JSON.stringify(prevTree));
+          const nodeToUpdate = findNode(newTree, node.id);
+          nodeToUpdate.children = children;
+          return newTree;
+        });
+        return;
+      }
 
 
       const response = await axios.get(`${API_URL}/units?level=${nextLevel}&parentId=${node.id}`);
