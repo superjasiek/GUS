@@ -22,17 +22,15 @@ function App() {
 
     const dataToExport = [];
 
-    for (const unitId of selectedUnits) {
-      // We need to fetch the unit name separately, or pass it along with the id
-      const unitName = `Unit ${unitId}`; // Placeholder
+    for (const unit of selectedUnits) {
       const unitData = {
-        name: unitName,
+        name: unit.label,
         years: {}
       };
 
       for (const varName in VARIABLES) {
         const varId = VARIABLES[varName];
-        const response = await axios.get(`${API_URL}/data?varId=${varId}&unitId=${unitId}`);
+        const response = await axios.get(`${API_URL}/data?varId=${varId}&unitId=${unit.value}`);
         const variableData = response.data.results;
         variableData.forEach(item => {
           item.values.forEach(val => {
@@ -82,7 +80,7 @@ function App() {
   return (
     <div>
       <h1>BDL Data Exporter</h1>
-      <UnitPicker selectedUnits={selectedUnits} setSelectedUnits={setSelectedUnits} />
+      <UnitPicker setSelectedUnits={setSelectedUnits} />
       <br /><br />
       <button onClick={handleExport}>Eksportuj do Excela</button>
     </div>
