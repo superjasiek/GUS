@@ -30,7 +30,7 @@ const TreeNode = ({ node, onNodeToggle, onUnitAdd }) => {
   );
 };
 
-const UnitPicker = ({ setSelectedUnits }) => {
+const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
   const [availableUnits, setAvailableUnits] = useState([]);
   const [tree, setTree] = useState([]);
 
@@ -101,7 +101,7 @@ const UnitPicker = ({ setSelectedUnits }) => {
       <div style={{ width: '50%' }}>
         <DualListBox
           options={availableUnits}
-          selected={[]}
+          selected={selectedUnits.map(u => u.value)}
           onChange={(selectedValues) => {
             const selectedObjects = selectedValues.map(value => availableUnits.find(u => u.value === value));
             setSelectedUnits(selectedObjects);

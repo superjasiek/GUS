@@ -80,7 +80,7 @@ function App() {
   return (
     <div>
       <h1>BDL Data Exporter</h1>
-      <UnitPicker setSelectedUnits={setSelectedUnits} />
+      <UnitPicker selectedUnits={selectedUnits} setSelectedUnits={setSelectedUnits} />
       <br /><br />
       <button onClick={handleExport}>Eksportuj do Excela</button>
     </div>
