@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import ExcelJS from 'exceljs';
 import UnitPicker from './components/UnitPicker';
@@ -6,15 +6,14 @@ import './App.css';
 
 const API_URL = 'http://192.168.1.182:3001/api';
 
+const VARIABLES = {
+  'ludnosc': '60618',
+  'zgony': '6581',
+  'migracje': '80122'
+};
+
 function App() {
   const [selectedUnits, setSelectedUnits] = useState([]);
-  const [variables, setVariables] = useState({});
-
-  useEffect(() => {
-    axios.get(`${API_URL}/variables`).then(response => {
-      setVariables(response.data);
-    });
-  }, []);
 
   const handleExport = async () => {
     if (selectedUnits.length === 0) {
@@ -30,9 +29,9 @@ function App() {
         years: {}
       };
 
-      for (const varName in variables) {
-        const varId = variables[varName];
-        const response = await axios.get(`${API_URL}/data?varId=${varId}&unitId=${unit.value}&yearFrom=2018&yearTo=2024`);
+      for (const varName in VARIABLES) {
+        const varId = VARIABLES[varName];
+        const response = await axios.get(`${API_URL}/data?varId=${varId}&unitId=${unit.value}`);
         const variableData = response.data.results;
         variableData.forEach(item => {
           item.values.forEach(val => {
