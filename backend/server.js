@@ -28,17 +28,9 @@ app.get('/api/units', async (req, res) => {
 });
 
 app.get('/api/data', async (req, res) => {
-    const { varId, unitId, yearFrom, yearTo } = req.query;
-    let url = `${BDL_API_URL}/data/by-variable/${varId}?unit-id=${unitId}&format=json`;
-
-    if (yearFrom && yearTo) {
-        for (let year = yearFrom; year <= yearTo; year++) {
-            url += `&year=${year}`;
-        }
-    }
-
+    const { varId, unitId } = req.query;
     try {
-        const response = await axios.get(url, {
+        const response = await axios.get(`${BDL_API_URL}/data/by-variable/${varId}?unit-id=${unitId}&year=2020&year=2021&year=2022&year=2023&year=2024&format=json`, {
             headers: { 'X-ClientId': BDL_API_KEY }
         });
         res.json(response.data);
@@ -46,30 +38,6 @@ app.get('/api/data', async (req, res) => {
         res.status(500).json({ error: 'Error fetching data' });
     }
 });
-
-const xlsx = require('xlsx');
-
-app.get('/api/variables', (req, res) => {
-    try {
-        const workbook = xlsx.readFile('DANE_Radomyśl Wielki_04.06.xlsx');
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const data = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
-
-        const variables = {};
-        const headers = data[0];
-        const ids = data[1];
-
-        for (let i = 0; i < headers.length; i++) {
-            variables[headers[i]] = ids[i];
-        }
-
-        res.json(variables);
-    } catch (error) {
-        res.status(500).json({ error: 'Error reading variables from Excel file' });
-    }
-});
-
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
