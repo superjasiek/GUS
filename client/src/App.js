@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import ExcelJS from 'exceljs';
+import UnitPicker from './components/UnitPicker';
 
 const API_URL = 'http://192.168.1.182:3001/api';
 
@@ -10,56 +11,8 @@ const VARIABLES = {
   'migracje': '80122'
 };
 
-const LEVELS = [
-  { id: 0, name: 'Polska' },
-  { id: 1, name: 'Makroregion' },
-  { id: 2, name: 'Województwo' },
-  { id: 3, name: 'Region' },
-  { id: 4, name: 'Podregion' },
-  { id: 5, name: 'Powiat' },
-  { id: 6, name: 'Gmina' }
-];
-
 function App() {
-  const [units, setUnits] = useState({});
   const [selectedUnits, setSelectedUnits] = useState([]);
-  const [selectedLevel, setSelectedLevel] = useState(0);
-  const [parentUnit, setParentUnit] = useState(null);
-
-  useEffect(() => {
-    let url = `${API_URL}/units?level=${selectedLevel}`;
-    if (parentUnit) {
-      url += `&parentId=${parentUnit}`;
-    }
-    axios.get(url)
-      .then(response => {
-        setUnits(prevUnits => ({ ...prevUnits, [selectedLevel]: response.data.results }));
-      })
-      .catch(error => {
-        console.error('Error fetching units:', error);
-      });
-  }, [selectedLevel, parentUnit]);
-
-  const handleLevelChange = (event) => {
-    setSelectedLevel(parseInt(event.target.value));
-    setParentUnit(null);
-  };
-
-  const handleParentUnitChange = (event) => {
-    setParentUnit(event.target.value);
-    setSelectedLevel(selectedLevel + 1);
-  };
-
-  const handleUnitChange = (event) => {
-    const { options } = event.target;
-    const value = [];
-    for (let i = 0, l = options.length; i < l; i++) {
-      if (options[i].selected) {
-        value.push({ id: options[i].value, name: options[i].text });
-      }
-    }
-    setSelectedUnits(value);
-  };
 
   const handleExport = async () => {
     if (selectedUnits.length === 0) {
@@ -69,15 +22,17 @@ function App() {
 
     const dataToExport = [];
 
-    for (const unit of selectedUnits) {
+    for (const unitId of selectedUnits) {
+      // We need to fetch the unit name separately, or pass it along with the id
+      const unitName = `Unit ${unitId}`; // Placeholder
       const unitData = {
-        name: unit.name,
+        name: unitName,
         years: {}
       };
 
       for (const varName in VARIABLES) {
         const varId = VARIABLES[varName];
-        const response = await axios.get(`${API_URL}/data?varId=${varId}&unitId=${unit.id}`);
+        const response = await axios.get(`${API_URL}/data?varId=${varId}&unitId=${unitId}`);
         const variableData = response.data.results;
         variableData.forEach(item => {
           item.values.forEach(val => {
@@ -127,33 +82,7 @@ function App() {
   return (
     <div>
       <h1>BDL Data Exporter</h1>
-      <div>
-        <label>Poziom: </label>
-        <select onChange={handleLevelChange} value={selectedLevel}>
-          {LEVELS.map(level => (
-            <option key={level.id} value={level.id}>{level.name}</option>
-          ))}
-        </select>
-      </div>
-      {selectedLevel > 0 && (
-        <div>
-          <label>Jednostka nadrzędna: </label>
-          <select onChange={handleParentUnitChange}>
-            <option value="">-- Wybierz --</option>
-            {units[selectedLevel - 1]?.map(unit => (
-              <option key={unit.id} value={unit.id}>{unit.name}</option>
-            ))}
-          </select>
-        </div>
-      )}
-      <div>
-        <label>Jednostki: </label>
-        <select multiple onChange={handleUnitChange}>
-          {units[selectedLevel]?.map(unit => (
-            <option key={unit.id} value={unit.id}>{unit.name}</option>
-          ))}
-        </select>
-      </div>
+      <UnitPicker selectedUnits={selectedUnits} setSelectedUnits={setSelectedUnits} />
       <br /><br />
       <button onClick={handleExport}>Eksportuj do Excela</button>
     </div>
