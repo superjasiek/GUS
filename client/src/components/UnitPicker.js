@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import DualListBox from 'react-dual-listbox';
-import 'react-dual-listbox/lib/react-dual-listbox.css';
-import { FaChevronLeft, FaChevronRight, FaAngleDoubleLeft, FaAngleDoubleRight } from 'react-icons/fa';
 
 const API_URL = 'http://192.168.1.182:3001/api';
 
@@ -32,7 +29,6 @@ const TreeNode = ({ node, onNodeToggle, onUnitAdd }) => {
 };
 
 const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
-  const [availableUnits, setAvailableUnits] = useState([]);
   const [tree, setTree] = useState([]);
 
   useEffect(() => {
@@ -84,9 +80,17 @@ const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
   };
 
   const handleUnitAdd = (unit) => {
-    if (!availableUnits.some(u => u.value === unit.value)) {
-      setAvailableUnits(prev => [...prev, unit]);
+    if (!selectedUnits.some(u => u.value === unit.value)) {
+      setSelectedUnits(prev => [...prev, unit]);
     }
+  };
+
+  const handleUnitRemove = (unit) => {
+    setSelectedUnits(prev => prev.filter(u => u.value !== unit.value));
+  };
+
+  const handleRemoveAll = () => {
+    setSelectedUnits([]);
   };
 
   return (
@@ -99,21 +103,17 @@ const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
           ))}
         </ul>
       </div>
-      <div className="dual-list">
-        <DualListBox
-          options={availableUnits}
-          selected={selectedUnits.map(u => u.value)}
-          onChange={(selectedValues) => {
-            const selectedObjects = selectedValues.map(value => availableUnits.find(u => u.value === value));
-            setSelectedUnits(selectedObjects);
-          }}
-          icons={{
-            moveLeft: <FaChevronLeft />,
-            moveAllLeft: <FaAngleDoubleLeft />,
-            moveRight: <FaChevronRight />,
-            moveAllRight: <FaAngleDoubleRight />,
-          }}
-        />
+      <div className="selected-units">
+        <h3>Wybrane jednostki</h3>
+        <button onClick={handleRemoveAll}>Usuń wszystko</button>
+        <ul>
+          {selectedUnits.map(unit => (
+            <li key={unit.value}>
+              {unit.label}
+              <button onClick={() => handleUnitRemove(unit)}>Usuń</button>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
