@@ -38,12 +38,14 @@
   max-width: 1000px;
 }
 
-.unit-tree,
-.dual-list {
-  width: 50%;
+.unit-tree {
+  width: 60%;
   padding: 0 20px;
+  border-right: 1px solid #eee;
+  text-align: left;
 }
 
-.unit-tree {
-  border-right: 1px solid #eee;
+.dual-list {
+  width: 40%;
+  padding: 0 20px;
 }
