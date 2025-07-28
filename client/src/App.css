@@ -28,3 +28,22 @@
   padding: 5px;
   cursor: pointer;
 }
+
+.unit-picker {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  max-width: 1000px;
+}
+
+.unit-tree,
+.dual-list {
+  width: 50%;
+  padding: 0 20px;
+}
+
+.unit-tree {
+  border-right: 1px solid #eee;
+}

@@ -90,8 +90,8 @@ const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
   };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ width: '50%' }}>
+    <div className="unit-picker">
+      <div className="unit-tree">
         <h3>Dostępne jednostki</h3>
         <ul>
           {tree.map(node => (
@@ -99,7 +99,7 @@ const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
           ))}
         </ul>
       </div>
-      <div style={{ width: '50%' }}>
+      <div className="dual-list">
         <DualListBox
           options={availableUnits}
           selected={selectedUnits.map(u => u.value)}
