@@ -5,6 +5,31 @@ import 'react-dual-listbox/lib/react-dual-listbox.css';
 
 const API_URL = 'http://192.168.1.182:3001/api';
 
+const TreeNode = ({ node, onNodeToggle, onUnitAdd }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleToggle = () => {
+    onNodeToggle(node);
+    setIsOpen(!isOpen);
+  };
+
+  return (
+    <li>
+      <span onClick={handleToggle} style={{ cursor: 'pointer' }}>
+        {isOpen ? '[-]' : '[+]'} {node.name}
+      </span>
+      <button onClick={() => onUnitAdd({ value: node.id, label: node.name })}>+</button>
+      {isOpen && node.children && (
+        <ul>
+          {node.children.map(child => (
+            <TreeNode key={child.id} node={child} onNodeToggle={onNodeToggle} onUnitAdd={onUnitAdd} />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+};
+
 const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
   const [availableUnits, setAvailableUnits] = useState([]);
   const [tree, setTree] = useState([]);
@@ -22,7 +47,7 @@ const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
       const response = await axios.get(`${API_URL}/units?level=${node.level + 1}&parentId=${node.id}`);
       const children = response.data.results.map(child => ({ ...child, level: node.level + 1, children: [] }));
       setTree(prevTree => {
-        const newTree = [...prevTree];
+        const newTree = JSON.parse(JSON.stringify(prevTree)); // Deep copy
         const nodeToUpdate = findNode(newTree, node.id);
         nodeToUpdate.children = children;
         return newTree;
@@ -40,31 +65,29 @@ const UnitPicker = ({ selectedUnits, setSelectedUnits }) => {
     }
   };
 
-  const renderTree = (nodes) => {
-    return (
-      <ul>
-        {nodes.map(node => (
-          <li key={node.id}>
-            <span onClick={() => onNodeToggle(node)}>{node.name}</span>
-            <button onClick={() => setAvailableUnits(prev => [...prev, { value: node.id, label: node.name }])}>+</button>
-            {node.children && renderTree(node.children)}
-          </li>
-        ))}
-      </ul>
-    );
+  const handleUnitAdd = (unit) => {
+    if (!availableUnits.some(u => u.value === unit.value)) {
+      setAvailableUnits(prev => [...prev, unit]);
+    }
   };
 
   return (
-    <div>
-      <div>
+    <div style={{ display: 'flex' }}>
+      <div style={{ width: '50%' }}>
         <h3>Dostępne jednostki</h3>
-        {renderTree(tree)}
+        <ul>
+          {tree.map(node => (
+            <TreeNode key={node.id} node={node} onNodeToggle={onNodeToggle} onUnitAdd={handleUnitAdd} />
+          ))}
+        </ul>
       </div>
-      <DualListBox
-        options={availableUnits}
-        selected={selectedUnits}
-        onChange={(selected) => setSelectedUnits(selected)}
-      />
+      <div style={{ width: '50%' }}>
+        <DualListBox
+          options={availableUnits}
+          selected={selectedUnits}
+          onChange={(selected) => setSelectedUnits(selected)}
+        />
+      </div>
     </div>
   );
 };
